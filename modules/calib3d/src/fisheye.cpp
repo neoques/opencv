@@ -463,7 +463,7 @@ void cv::fisheye::undistortPoints( InputArray distorted, OutputArray undistorted
 /// cv::fisheye::initUndistortRectifyMap
 
 void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArray R, InputArray P,
-    const cv::Size& size, int m1type, OutputArray map1, OutputArray map2 )
+    const cv::Size& size, int m1type, OutputArray map1, OutputArray map2, double maxFovDeg )
 {
     CV_INSTRUMENT_REGION();
 
@@ -511,6 +511,9 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
 
     cv::Matx33d iR = (PP * RR).inv(cv::DECOMP_SVD);
 
+    const bool   capFov        = maxFovDeg > 0.0;
+    const double maxHalfFovRad = maxFovDeg * CV_PI / 360.0;
+
     for( int i = 0; i < size.height; ++i)
     {
         float* m1f = map1.getMat().ptr<float>(i);
@@ -534,7 +537,7 @@ void cv::fisheye::initUndistortRectifyMap( InputArray K, InputArray D, InputArra
             double u = f[0] * _x * scale + c[0];
             double v = f[1] * _y * scale + c[1];
 
-            if (u < 0 || v < 0) {
+            if ((capFov && theta > maxHalfFovRad) || u < 0 || v < 0) {
                 u = v = -std::numeric_limits<double>::infinity();
             }
 

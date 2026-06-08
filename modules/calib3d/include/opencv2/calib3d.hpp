@@ -3959,9 +3959,11 @@ namespace fisheye
     for details.
     @param map1 The first output map.
     @param map2 The second output map.
+    @param maxFovDeg Optional cap on the full (edge-to-edge) field of view, in degrees, sampled from
+    the distorted image. 0 is a sentinel value that means no cap.
      */
     CV_EXPORTS_W void initUndistortRectifyMap(InputArray K, InputArray D, InputArray R, InputArray P,
-        const cv::Size& size, int m1type, OutputArray map1, OutputArray map2);
+        const cv::Size& size, int m1type, OutputArray map1, OutputArray map2, double maxFovDeg = 0);
 
     /** @brief Transforms an image to compensate for fisheye lens distortion.
 
